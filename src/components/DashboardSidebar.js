@@ -19,9 +19,13 @@ import {
   ShoppingBag as ShoppingBagIcon,
   User as UserIcon,
   UserPlus as UserPlusIcon,
-  Users as UsersIcon
+  Users as UsersIcon,
+  Book as BookIcon,
 } from 'react-feather';
 import NavItem from './NavItem';
+import { useSelector } from 'react-redux';
+import getInitials from '../utils/getInitials';
+
 
 const user = {
   avatar: '/static/images/avatars/avatar_6.png',
@@ -31,49 +35,64 @@ const user = {
 
 const items = [
   {
-    href: '/app/dashboard',
+    href: '/student/exams',
     icon: BarChartIcon,
-    title: 'Dashboard'
+    title: 'Exams',
+    role: ['student'],
   },
   {
-    href: '/app/customers',
+    href: '/student/records',
+    icon: BookIcon,
+    title: 'Records',
+    role: ['student'],
+  },
+  {
+    href: '/admin',
     icon: UsersIcon,
-    title: 'Customers'
+    title: 'All Users',
+    role: ['admin'],
+  },
+  {
+    href: '/admin/add-teacher',
+    icon: UserPlusIcon,
+    title: 'Add Teacher',
+    role: ['admin'],
   },
   {
     href: '/app/products',
     icon: ShoppingBagIcon,
-    title: 'Products'
+    title: 'Products',
+    role: [],
   },
   {
     href: '/app/account',
     icon: UserIcon,
-    title: 'Account'
+    title: 'Account',
+    role: [],
   },
   {
     href: '/app/settings',
     icon: SettingsIcon,
-    title: 'Settings'
+    title: 'Settings',
+    role: [],
   },
   {
     href: '/login',
     icon: LockIcon,
-    title: 'Login'
+    title: 'Login',
+    role: [],
   },
   {
     href: '/register',
     icon: UserPlusIcon,
-    title: 'Register'
+    title: 'Register',
+    role: [],
   },
-  {
-    href: '/404',
-    icon: AlertCircleIcon,
-    title: 'Error'
-  }
 ];
 
 const DashboardSidebar = ({ onMobileClose, openMobile }) => {
   const location = useLocation();
+  const { name, role } = useSelector(state => state.Auth);
 
   useEffect(() => {
     if (openMobile && onMobileClose) {
@@ -99,31 +118,35 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
       >
         <Avatar
           component={RouterLink}
-          src={user.avatar}
+          // src={user.avatar}
           sx={{
             cursor: 'pointer',
             width: 64,
             height: 64
           }}
           to="/app/account"
-        />
-        <Typography
-          color="textPrimary"
-          variant="h5"
         >
-          {user.name}
-        </Typography>
-        <Typography
+          {getInitials(name)}
+        </Avatar>
+        <Box mt={2}>
+          <Typography
+            color="textPrimary"
+            variant="h5"
+          >
+            {name}
+          </Typography>
+        </Box>
+        {/* <Typography
           color="textSecondary"
           variant="body2"
         >
           {user.jobTitle}
-        </Typography>
+        </Typography> */}
       </Box>
       <Divider />
       <Box sx={{ p: 2 }}>
         <List>
-          {items.map((item) => (
+          {items.map((item) => item['role'].includes(role) && (
             <NavItem
               href={item.href}
               key={item.title}
@@ -134,43 +157,6 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
         </List>
       </Box>
       <Box sx={{ flexGrow: 1 }} />
-      <Box
-        sx={{
-          backgroundColor: 'background.default',
-          m: 2,
-          p: 2
-        }}
-      >
-        <Typography
-          align="center"
-          gutterBottom
-          variant="h4"
-        >
-          Need more?
-        </Typography>
-        <Typography
-          align="center"
-          variant="body2"
-        >
-          Upgrade to PRO version and access 20 more screens
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            pt: 2
-          }}
-        >
-          <Button
-            color="primary"
-            component="a"
-            href="https://react-material-kit.devias.io"
-            variant="contained"
-          >
-            See PRO version
-          </Button>
-        </Box>
-      </Box>
     </Box>
   );
 

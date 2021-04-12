@@ -1,4 +1,4 @@
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
@@ -12,14 +12,19 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
+import { useDispatch, useSelector } from 'react-redux';
+import { signup } from '../redux/action/auth';
+import MainLayout from 'src/components/MainLayout';
 
 const Register = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { signingUp } = useSelector(state => state.Auth);
 
   return (
-    <>
+    <MainLayout>
       <Helmet>
-        <title>Register | Material Kit</title>
+        <title>Create account | Exam Website</title>
       </Helmet>
       <Box
         sx={{
@@ -34,22 +39,21 @@ const Register = () => {
           <Formik
             initialValues={{
               email: '',
-              firstName: '',
-              lastName: '',
+              name: '',
+              mobile: '',
               password: '',
-              policy: false
+
             }}
             validationSchema={
               Yup.object().shape({
                 email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-                firstName: Yup.string().max(255).required('First name is required'),
-                lastName: Yup.string().max(255).required('Last name is required'),
+                name: Yup.string().max(255).required('Full name is required'),
+                mobile: Yup.string().max(255).required('Mobile number is required'),
                 password: Yup.string().max(255).required('password is required'),
-                policy: Yup.boolean().oneOf([true], 'This field must be checked')
               })
             }
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit={(values) => {
+              dispatch(signup(values));
             }}
           >
             {({
@@ -81,24 +85,12 @@ const Register = () => {
                   error={Boolean(touched.firstName && errors.firstName)}
                   fullWidth
                   helperText={touched.firstName && errors.firstName}
-                  label="First name"
+                  label="Full name"
                   margin="normal"
-                  name="firstName"
+                  name="name"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.firstName}
-                  variant="outlined"
-                />
-                <TextField
-                  error={Boolean(touched.lastName && errors.lastName)}
-                  fullWidth
-                  helperText={touched.lastName && errors.lastName}
-                  label="Last name"
-                  margin="normal"
-                  name="lastName"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.lastName}
+                  value={values.name}
                   variant="outlined"
                 />
                 <TextField
@@ -127,44 +119,23 @@ const Register = () => {
                   value={values.password}
                   variant="outlined"
                 />
-                <Box
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    ml: -1
-                  }}
-                >
-                  <Checkbox
-                    checked={values.policy}
-                    name="policy"
-                    onChange={handleChange}
-                  />
-                  <Typography
-                    color="textSecondary"
-                    variant="body1"
-                  >
-                    I have read the
-                    {' '}
-                    <Link
-                      color="primary"
-                      component={RouterLink}
-                      to="#"
-                      underline="always"
-                      variant="h6"
-                    >
-                      Terms and Conditions
-                    </Link>
-                  </Typography>
-                </Box>
-                {Boolean(touched.policy && errors.policy) && (
-                  <FormHelperText error>
-                    {errors.policy}
-                  </FormHelperText>
-                )}
+                <TextField
+                  error={Boolean(touched.mobile && errors.mobile)}
+                  fullWidth
+                  helperText={touched.mobile && errors.mobile}
+                  label="Mobile Number"
+                  margin="normal"
+                  name="mobile"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  type="mobile"
+                  value={values.mobile}
+                  variant="outlined"
+                />
                 <Box sx={{ py: 2 }}>
                   <Button
                     color="primary"
-                    disabled={isSubmitting}
+                    disabled={signingUp}
                     fullWidth
                     size="large"
                     type="submit"
@@ -192,7 +163,7 @@ const Register = () => {
           </Formik>
         </Container>
       </Box>
-    </>
+    </MainLayout>
   );
 };
 
