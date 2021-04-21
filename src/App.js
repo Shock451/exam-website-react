@@ -1,5 +1,5 @@
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import { BrowserRouter as Router, Switch, Redirect, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Redirect } from "react-router-dom";
 import { ThemeProvider } from '@material-ui/core';
 import GlobalStyles from 'src/components/GlobalStyles';
 import 'src/mixins/chartjs';
@@ -10,20 +10,19 @@ import { Provider } from 'react-redux';
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
 
-import DashboardLayout from './components/DashboardLayout';
-import MainLayout from './components/MainLayout';
-import Account from './pages/Account';
-import CustomerList from './pages/CustomerList';
+
 import StudentDashboard from './pages/student/Dashboard';
+import ExamRecords from './pages/student/ExamRecords';
 
 import AdminDashboard from './pages/admin/Dashboard';
 import CreateUser from './pages/admin/CreateUser';
 
+import TeacherDashboard from './pages/teacher/Dashboard';
+import CreateExam from './pages/teacher/CreateExam';
+import ManageExam from './pages/teacher/ManageExam';
+
 import Login from './pages/Login';
-import NotFound from './pages/NotFound';
-import ProductList from './pages/ProductList';
 import Register from './pages/Register';
-import Settings from './pages/Settings';
 
 let { store, persistor } = configureStore();
 
@@ -36,12 +35,19 @@ const App = () => {
           <GlobalStyles />
           <Router>
             <Switch>
-
+              <PrivateRoute role="student" path="/student/records" component={ExamRecords} />
               <PrivateRoute role="student" path="/student" component={StudentDashboard} />
+              
+              <PrivateRoute role="teacher" path="/teacher/exams/:id" component={ManageExam} />
+              <PrivateRoute role="teacher" path="/teacher/exams/add" component={CreateExam} />
+              <PrivateRoute role="teacher" path="/teacher" component={TeacherDashboard} />
+              
               <PrivateRoute role="admin" path="/admin/add-teacher" component={CreateUser} />
               <PrivateRoute role="admin" path="/admin" component={AdminDashboard} />
+
               <PublicRoute path="/login" component={Login} />
               <PublicRoute path="/register" component={Register} />
+
               {/* <PrivateRoute exact path="/" component={Home} />
               <PrivateRoute path="/profile" component={Profile} />
 

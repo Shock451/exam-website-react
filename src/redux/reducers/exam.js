@@ -5,6 +5,8 @@ const initialState = {
     questions: {},
     examInProgress: null,
     fetchingQuestions: false,
+
+    records: [],
 };
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -29,6 +31,68 @@ const reducer = (state = initialState, { type, payload }) => {
                 fetchingExams: false,
             };
 
+        case examActionTypes.CREATE_EXAM_START:
+            return {
+                ...state,
+                creatingExam: true,
+                createExamError: null,
+            };
+        case examActionTypes.CREATE_EXAM_FAILURE:
+            return {
+                ...state,
+                createExamError: payload,
+                creatingExam: false,
+            };
+        case examActionTypes.CREATE_EXAM_SUCCESS:
+            return {
+                ...state,
+                createExamError: null,
+                creatingExam: false,
+            };
+
+        case examActionTypes.DELETE_EXAM_START:
+            return {
+                ...state,
+                deletingExam: true,
+                deleteExamError: null,
+            };
+        case examActionTypes.DELETE_EXAM_FAILURE:
+            return {
+                ...state,
+                deleteExamError: payload,
+                deletingExam: false,
+            };
+        case examActionTypes.DELETE_EXAM_SUCCESS:
+            let _exams = [...state.exams];
+            _exams = _exams.filter(exam => exam.id !== payload);
+
+            return {
+                ...state,
+                exams: _exams,
+                deleteExamError: null,
+                deletingExam: false,
+            };
+
+        case examActionTypes.FETCH_RECORDS_START:
+            return {
+                ...state,
+                fetchingRecords: true,
+                fetchRecordsError: null,
+            };
+        case examActionTypes.FETCH_RECORDS_FAILURE:
+            return {
+                ...state,
+                fetchRecordsError: payload,
+                fetchingRecords: false,
+            };
+        case examActionTypes.FETCH_RECORDS_SUCCESS:
+            return {
+                ...state,
+                records: payload,
+                fetchRecordsError: null,
+                fetchingRecords: false,
+            };
+
         case examActionTypes.FETCH_QUESTIONS_START:
             return {
                 ...state,
@@ -49,7 +113,6 @@ const reducer = (state = initialState, { type, payload }) => {
                 fetchingQuestions: false,
             };
 
-
         case examActionTypes.SUBMIT_ANSWERS_START:
             return {
                 ...state,
@@ -65,7 +128,6 @@ const reducer = (state = initialState, { type, payload }) => {
         case examActionTypes.SUBMIT_ANSWERS_SUCCESS:
             return {
                 ...state,
-                questions: payload,
                 submitAnswersError: null,
                 submittingAnswers: false,
             };

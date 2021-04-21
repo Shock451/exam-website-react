@@ -29,13 +29,23 @@ import DashboardLayout from '../../components/DashboardLayout';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchExams, fetchQuestions, submitAnswers } from '../../redux/action/exam';
+import { useHistory } from 'react-router-dom';
 
 const Dashboard = (props) => {
 
   const dispatch = useDispatch();
-  const { exams, questions, examInProgress, submittingExam, fetchingQuestions } = useSelector(state => state.Exam);
+  const history = useHistory();
+  const { exams, questions, examInProgress, submittingAnswers, submitAnswersError, fetchingQuestions } = useSelector(state => state.Exam);
   const [questionsState, setQuestionsState] = React.useState({});
 
+  const [submitted, setSubmitted] = React.useState(false);
+
+  React.useEffect(() => {
+    if (submitted && !submittingAnswers && submitAnswersError === null) {
+      history.push("/records");
+    }
+    return () => null;
+  }, [submitted, submittingAnswers, submitAnswersError, history]);
 
   React.useEffect(() => {
     dispatch(fetchExams());
@@ -55,6 +65,7 @@ const Dashboard = (props) => {
 
   const handleEnd = () => {
     dispatch(submitAnswers(examInProgress, questionsState));
+    setSubmitted(true);
   }
 
   return (
@@ -73,7 +84,7 @@ const Dashboard = (props) => {
             {!examInProgress ?
               <Grid item lg={12}>
                 <Card {...props}>
-                  <CardHeader title="All Registered Users" />
+                  <CardHeader title="Available Exams" />
                   <Divider />
                   <PerfectScrollbar>
                     <Box sx={{ minWidth: 800 }}>
@@ -173,7 +184,7 @@ const Dashboard = (props) => {
                   <Box sx={{ py: 2, mx: 3, mt: 3, mb: 2 }}>
                     <Button
                       color="primary"
-                      disabled={submittingExam}
+                      disabled={submittingAnswers}
                       // fullWidth
                       size="large"
                       type="submit"

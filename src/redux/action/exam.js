@@ -26,6 +26,49 @@ const fetchExamsSuccess = (payload) => {
     };
 }
 
+const deleteExamStart = (payload) => {
+    return {
+        type: examActionTypes.DELETE_EXAM_START,
+        payload,
+    };
+}
+
+const deleteExamFailed = (payload) => {
+    return {
+        type: examActionTypes.DELETE_EXAM_FAILURE,
+        payload,
+    };
+}
+
+const deleteExamSuccess = (payload) => {
+    return {
+        type: examActionTypes.DELETE_EXAM_SUCCESS,
+        payload,
+    };
+}
+
+
+const fetchRecordsStart = (payload) => {
+    return {
+        type: examActionTypes.FETCH_RECORDS_START,
+        payload,
+    };
+}
+
+const fetchRecordsFailed = (payload) => {
+    return {
+        type: examActionTypes.FETCH_RECORDS_FAILURE,
+        payload,
+    };
+}
+
+const fetchRecordsSuccess = (payload) => {
+    return {
+        type: examActionTypes.FETCH_RECORDS_SUCCESS,
+        payload,
+    };
+}
+
 
 const startExam = (payload) => {
     return {
@@ -62,10 +105,9 @@ const fetchQuestionsSuccess = (payload) => {
 }
 
 
-const submitAnswersStart = (payload) => {
+const submitAnswersStart = () => {
     return {
         type: examActionTypes.SUBMIT_ANSWERS_START,
-        payload,
     };
 }
 
@@ -79,6 +121,26 @@ const submitAnswersFailed = (payload) => {
 const submitAnswersSuccess = (payload) => {
     return {
         type: examActionTypes.SUBMIT_ANSWERS_SUCCESS,
+        payload,
+    };
+}
+
+const createExamStart = (payload) => {
+    return {
+        type: examActionTypes.CREATE_EXAM_START,
+    };
+}
+
+const createExamFailed = (payload) => {
+    return {
+        type: examActionTypes.CREATE_EXAM_FAILURE,
+        payload,
+    };
+}
+
+const createExamSuccess = (payload) => {
+    return {
+        type: examActionTypes.CREATE_EXAM_SUCCESS,
         payload,
     };
 }
@@ -99,9 +161,7 @@ export const submitAnswers = (exam_id, data) => async (dispatch) => {
                 },
             });
             if (res.status === 200) {
-                let questions = res.data.questions;
-                console.log(questions);
-                dispatch(submitAnswersSuccess(questions));
+                dispatch(submitAnswersSuccess());
                 dispatch(endExam());
             } else {
                 let err = res.data.err;
@@ -129,7 +189,6 @@ export const fetchQuestions = (id) => async (dispatch) => {
             });
             if (res.status === 200) {
                 let questions = res.data.questions;
-                console.log(questions);
                 dispatch(fetchQuestionsSuccess(questions));
                 dispatch(startExam(id));
             } else {
@@ -144,21 +203,21 @@ export const fetchQuestions = (id) => async (dispatch) => {
     }
 }
 
-export const fetchExams = () => async (dispatch) => {
+export const fetchExams = (all = true) => async (dispatch) => {
     const token = localStorage.getItem('token');
     dispatch(fetchExamsStart());
     if (!token) {
         dispatch(fetchExamsFailed("Token not found"));
     } else {
         try {
-            const res = await axios.get(`${API_URL}/exams/`, {
+            const endpoint = all ? 'exams' : 'exams/me';
+            const res = await axios.get(`${API_URL}/${endpoint}`, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                 },
             });
             if (res.status === 200) {
                 let exams = res.data.exams;
-                console.log(exams);
                 dispatch(fetchExamsSuccess(exams));
             } else {
                 let err = res.data.err;
@@ -170,4 +229,85 @@ export const fetchExams = () => async (dispatch) => {
             dispatch(fetchExamsFailed(err.message));
         }
     }
+}
+
+export const fetchRecords = () => async (dispatch) => {
+    const token = localStorage.getItem('token');
+    dispatch(fetchRecordsStart());
+    if (!token) {
+        dispatch(fetchRecordsFailed("Token not found"));
+    } else {
+        try {
+            const res = await axios.get(`${API_URL}/exams/history`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+            if (res.status === 200) {
+                let records = res.data.history;
+                dispatch(fetchRecordsSuccess(records));
+            } else {
+                let err = res.data.err;
+                console.log(err);
+                dispatch(fetchRecordsFailed(err));
+            }
+        } catch (err) {
+            console.log(err);
+            dispatch(fetchRecordsFailed(err.message));
+        }
+    }
+}
+
+export const deleteExam = (id) => async (dispatch) => {
+    const token = localStorage.getItem('token');
+    dispatch(deleteExamStart());
+    if (!token) {
+        dispatch(deleteExamFailed("Token not found"));
+    } else {
+        try {
+            const res = await axios.delete(`${API_URL}/exams/${id}`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+            if (res.status === 200) {
+                dispatch(deleteExamSuccess(id));
+                // dispatch(loadExam());
+            } else {
+                let err = res.data.err;
+                console.log(err);
+                dispatch(deleteExamFailed(err));
+            }
+        } catch (err) {
+            console.log(err);
+            dispatch(deleteExamFailed(err.message));
+        }
+    }
+}
+
+
+export const createExam = (data) => async (dispatch) => {
+    const token = localStorage.getItem('token');
+    dispatch(createExamStart());
+    if (!token) {
+        dispatch(createExamFailed("Token not found"));
+    } else {
+        try {
+            const res = await axios.post(`${API_URL}/exams`, data, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+            if (res.status === 200) {
+                dispatch(createExamSuccess());
+            } else {
+                let err = res.data.err;
+                console.log(err);
+                dispatch(createExamFailed(err));
+            }
+        } catch (err) {
+            console.log(err);
+            dispatch(createExamFailed(err.message));
+        }
+    };
 }

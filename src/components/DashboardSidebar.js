@@ -59,6 +59,18 @@ const items = [
     role: ['admin'],
   },
   {
+    href: '/teacher',
+    icon: UsersIcon,
+    title: 'All Exams',
+    role: ['teacher'],
+  },
+  {
+    href: '/teacher/exams/add',
+    icon: UserPlusIcon,
+    title: 'Add Exam',
+    role: ['teacher'],
+  },
+  {
     href: '/app/products',
     icon: ShoppingBagIcon,
     title: 'Products',

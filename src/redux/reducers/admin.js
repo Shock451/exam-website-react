@@ -51,7 +51,7 @@ const reducer = (state = initialState, { type, payload }) => {
                 deletingUser: false,
             };
 
-            case adminActionTypes.ADD_TEACHER_START:
+        case adminActionTypes.ADD_TEACHER_START:
             return {
                 ...state,
                 addingTeacher: true,
@@ -70,8 +70,6 @@ const reducer = (state = initialState, { type, payload }) => {
                 addTeacherError: null,
                 addingTeacher: false,
             };
-
-
 
         default:
             return state;
